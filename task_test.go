@@ -157,3 +157,70 @@ func Test_wholeStory(t *testing.T) {
 		}
 	}
 }
+
+func Test_storyStats(t *testing.T) {
+	type testCase struct {
+		sequence        string
+		expShortestWord string
+		expLongestWord  string
+		expAvgWordLen   float64
+		expAvgLenWords  []string
+	}
+
+	testCases := []testCase{
+		{
+			sequence: "",
+		},
+		{
+			sequence: "12-aa-",
+		},
+		{
+			sequence:        "4-aa-8-bb",
+			expShortestWord: "aa",
+			expLongestWord:  "aa",
+			expAvgWordLen:   2,
+			expAvgLenWords:  []string{"aa", "bb"},
+		},
+		{
+			sequence:        "5-aa-6-bbb-10-cccc",
+			expShortestWord: "aa",
+			expLongestWord:  "cccc",
+			expAvgWordLen:   3,
+			expAvgLenWords:  []string{"bbb"},
+		},
+	}
+
+	for _, tCase := range testCases {
+		shortestWord, longestWord, avgWordLen, avgLenWords := storyStats(tCase.sequence)
+
+		if shortestWord != tCase.expShortestWord {
+			t.Errorf("failed on sequence: %s, expected shortest word: %v, got: %v", tCase.sequence, tCase.expShortestWord, shortestWord)
+		}
+
+		if longestWord != tCase.expLongestWord {
+			t.Errorf("failed on sequence: %s, expected longest word: %v, got: %v", tCase.sequence, tCase.expLongestWord, longestWord)
+		}
+
+		if !equalsFloat(avgWordLen, tCase.expAvgWordLen) {
+			t.Errorf("failed on sequence: %s, expected avg word len: %v, got: %v", tCase.sequence, tCase.expAvgWordLen, avgWordLen)
+		}
+
+		if !equalsStingSlices(avgLenWords, tCase.expAvgLenWords) {
+			t.Errorf("failed on sequence: %s, expected avg len words: %v, got: %v", tCase.sequence, tCase.expAvgLenWords, avgLenWords)
+		}
+	}
+}
+
+func equalsStingSlices(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i, val := range a {
+		if val != b[i] {
+			return false
+		}
+	}
+
+	return true
+}
