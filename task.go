@@ -73,3 +73,15 @@ func wholeStory(s string) (string, error) {
 
 	return strings.Join(result, " "), nil
 }
+
+// storyStats - returns four things:
+//   * the shortest word
+//   * the longest word
+//   * the average word length
+//   * the list (or empty list) of all words from the story that have the length the same as the average length rounded up and down.
+// Time complexity: O(N)
+// Estimated time: 20m
+// Used time: ?m
+func storyStats(s string) (shortestWord, longestWord string, avgWordLen float64, avgLenWords []string) {
+	return
+}
