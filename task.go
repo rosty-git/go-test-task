@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"regexp"
 	"strconv"
 	"strings"
@@ -9,7 +9,10 @@ import (
 
 const separator = "-"
 
-var validFmt = regexp.MustCompile(`(\d+-[[:ascii:]]+-)+$`)
+var (
+	validFmt                 = regexp.MustCompile(`(\d+-[[:ascii:]]+-)+$`)
+	ErrInvalidSequenceFormat = errors.New("invalid sequence format")
+)
 
 // testValidity - validates input string.
 // Expected a sequence of numbers followed by separator followed by text, eg: `23-ab-48-caba-56-haha`
@@ -34,7 +37,7 @@ func testValidity(s string) bool {
 // Used time: 17m
 func averageNumber(s string) (float64, error) {
 	if !testValidity(s) {
-		return 0, fmt.Errorf("invalid seaquence format")
+		return 0, ErrInvalidSequenceFormat
 	}
 
 	tokens := strings.Split(s, separator)
@@ -56,11 +59,17 @@ func averageNumber(s string) (float64, error) {
 // wholeStory - returns a text that is composed of all the text words separated by spaces
 // Time complexity: O(N)
 // Estimated time: 10m
-// Used time: ?m
+// Used time: 9m
 func wholeStory(s string) (string, error) {
 	if !testValidity(s) {
-		return "", fmt.Errorf("invalid seaquence format")
+		return "", ErrInvalidSequenceFormat
 	}
 
-	return "", nil
+	tokens := strings.Split(s, separator)
+	result := make([]string, 0, len(tokens)/2)
+	for i := 1; i < len(tokens); i += 2 {
+		result = append(result, tokens[i])
+	}
+
+	return strings.Join(result, " "), nil
 }
