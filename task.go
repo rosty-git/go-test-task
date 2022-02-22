@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
+const separator = "-"
 var validFmt = regexp.MustCompile(`(\d+-[[:ascii:]]+-)+$`)
 
 // testValidity - validates input string.
-// Expected a sequence of numbers followed by dash followed by text, eg: `23-ab-48-caba-56-haha`
+// Expected a sequence of numbers followed by separator followed by text, eg: `23-ab-48-caba-56-haha`
 // Time complexity: O(N)
 // Estimated time: 20m
 // Used time: 28m
@@ -16,17 +20,34 @@ func testValidity(s string) bool {
 		return false
 	}
 
-	return validFmt.MatchString(s + "-")
+	if s[len(s) - 1:] == separator {
+		return false
+	}
+
+	return validFmt.MatchString(s + separator)
 }
 
 // averageNumber - calculates average number from all the numbers
 // Time complexity: O(N)
 // Estimated time: 10m
-// Used time: ?m
-func averageNumber(s string) float64 {
-	if len(s) == 0 {
-		return 0
+// Used time: 17m
+func averageNumber(s string) (float64, error) {
+	if !testValidity(s) {
+		return 0, fmt.Errorf("invalid seaquence format")
 	}
 
-	return 0
+	tokens := strings.Split(s, separator)
+
+	sum := 0.0
+	for i := 0; i < len(tokens); i += 2 {
+		num, err := strconv.ParseUint(tokens[i], 10, 64)
+		if err != nil {
+			return 0, err
+		}
+
+		sum += float64(num)
+	}
+
+	n := float64(len(tokens) / 2)
+	return sum / n, nil
 }
