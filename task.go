@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -81,7 +82,39 @@ func wholeStory(s string) (string, error) {
 //   * the list (or empty list) of all words from the story that have the length the same as the average length rounded up and down.
 // Time complexity: O(N)
 // Estimated time: 20m
-// Used time: ?m
+// Used time: 18m
 func storyStats(s string) (shortestWord, longestWord string, avgWordLen float64, avgLenWords []string) {
+	if !testValidity(s) {
+		return
+	}
+
+	tokens := strings.Split(s, separator)
+
+	sum := 0
+	for i := 1; i < len(tokens); i += 2 {
+		word := tokens[i]
+		wordLen := len(tokens[i])
+		sum += wordLen
+
+		if shortestWord == "" || len(shortestWord) > wordLen {
+			shortestWord = word
+		}
+
+		if longestWord == "" || len(longestWord) < wordLen {
+			longestWord = word
+		}
+	}
+
+	avgWordLen = float64(sum) / float64(len(tokens)/2)
+	floor := math.Floor(avgWordLen)
+	ceil := math.Ceil(avgWordLen)
+	for i := 1; i < len(tokens); i += 2 {
+		word := tokens[i]
+		wordLen := float64(len(tokens[i]))
+		if wordLen >= floor && wordLen <= ceil {
+			avgLenWords = append(avgLenWords, word)
+		}
+	}
+
 	return
 }
