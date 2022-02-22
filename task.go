@@ -8,6 +8,7 @@ import (
 )
 
 const separator = "-"
+
 var validFmt = regexp.MustCompile(`(\d+-[[:ascii:]]+-)+$`)
 
 // testValidity - validates input string.
@@ -20,7 +21,7 @@ func testValidity(s string) bool {
 		return false
 	}
 
-	if s[len(s) - 1:] == separator {
+	if s[len(s)-1:] == separator {
 		return false
 	}
 
@@ -50,4 +51,16 @@ func averageNumber(s string) (float64, error) {
 
 	n := float64(len(tokens) / 2)
 	return sum / n, nil
+}
+
+// wholeStory - returns a text that is composed of all the text words separated by spaces
+// Time complexity: O(N)
+// Estimated time: 10m
+// Used time: ?m
+func wholeStory(s string) (string, error) {
+	if !testValidity(s) {
+		return "", fmt.Errorf("invalid seaquence format")
+	}
+
+	return "", nil
 }
