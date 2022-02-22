@@ -3,19 +3,22 @@ package main
 import (
 	"errors"
 	"math"
+	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const separator = "-"
 
 var (
-	validFmt                 = regexp.MustCompile(`(\d+-[[:ascii:]]+-)+$`)
+	validNumber              = regexp.MustCompile(`^\d+$`)
+	validWord                = regexp.MustCompile(`^[[:ascii:]]+$`)
 	ErrInvalidSequenceFormat = errors.New("invalid sequence format")
 )
 
-// testValidity - validates input string.
+// testValidity - validates sequence string.
 // Expected a sequence of numbers followed by separator followed by text, eg: `23-ab-48-caba-56-haha`
 // Time complexity: O(N)
 // Estimated time: 20m
@@ -25,11 +28,24 @@ func testValidity(s string) bool {
 		return false
 	}
 
-	if s[len(s)-1:] == separator {
+	tokens := strings.Split(s, separator)
+	if len(tokens)%2 > 0 {
 		return false
 	}
 
-	return validFmt.MatchString(s + separator)
+	for i, token := range tokens {
+		ok := false
+		if i%2 == 0 {
+			ok = validNumber.MatchString(token)
+		} else {
+			ok = validWord.MatchString(token)
+		}
+		if !ok {
+			return false
+		}
+	}
+
+	return true
 }
 
 // averageNumber - calculates average number from all the numbers
@@ -117,4 +133,50 @@ func storyStats(s string) (shortestWord, longestWord string, avgWordLen float64,
 	}
 
 	return
+}
+
+// generate - generates random expected strings if the parameter is `true` and random incorrect strings otherwise
+// Time complexity: O(N)
+// Estimated time: 20m
+// Used time: 30m
+func generate(correct bool) string {
+	rand.Seed(time.Now().UnixNano())
+
+	if !correct && rand.Float32() < 0.1 {
+		return ""
+	}
+
+	tokenPairs := rand.Intn(10) + 1
+	tokens := make([]string, 0, tokenPairs*2)
+
+	for i := 0; i < tokenPairs; i++ {
+		if correct {
+			tokens = append(tokens, genNumber())
+		} else {
+			tokens = append(tokens, genWord())
+		}
+		tokens = append(tokens, genWord())
+	}
+
+	return strings.Join(tokens, separator)
+}
+
+// genNumber - generates random number
+func genNumber() string {
+	return strconv.Itoa(rand.Intn(1000))
+}
+
+const asciiLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+// genWord - generates random string
+func genWord() string {
+	wordLen := rand.Intn(15) + 1
+	var word strings.Builder
+	word.Grow(wordLen)
+
+	for i := 0; i < wordLen; i++ {
+		word.WriteByte(asciiLetters[rand.Intn(len(asciiLetters))])
+	}
+
+	return word.String()
 }
