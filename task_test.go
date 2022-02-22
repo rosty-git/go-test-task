@@ -117,3 +117,43 @@ func Test_averageNumber(t *testing.T) {
 func equalsFloat(a, b float64) bool {
 	return math.Abs(a-b) < 1e-6
 }
+
+func Test_wholeStory(t *testing.T) {
+	type testCase struct {
+		sequence    string
+		expected    string
+		expectedErr string
+	}
+
+	testCases := []testCase{
+		{
+			sequence:    "",
+			expected:    "",
+			expectedErr: ErrInvalidSequenceFormat.Error(),
+		},
+		{
+			sequence:    "12-aa-",
+			expected:    "",
+			expectedErr: ErrInvalidSequenceFormat.Error(),
+		},
+		{
+			sequence: "4-aa-8-bb",
+			expected: "aa bb",
+		},
+		{
+			sequence: "5-aa-6-bb-10-cc",
+			expected: "aa bb cc",
+		},
+	}
+
+	for _, tCase := range testCases {
+		actual, err := wholeStory(tCase.sequence)
+		if err != nil && err.Error() != tCase.expectedErr {
+			t.Errorf("got err: %v, on sequence: %s", err, tCase.sequence)
+		}
+
+		if actual != tCase.expected {
+			t.Errorf("failed on sequence: %s, expected: %v, got: %v", tCase.sequence, tCase.expected, actual)
+		}
+	}
+}
